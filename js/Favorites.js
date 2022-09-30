@@ -1,6 +1,7 @@
 export class Favorites {
     constructor(root) {
         this.root = document.querySelector(root)
+        this.load()
     }
 
     load() {
@@ -11,23 +12,28 @@ export class Favorites {
                 public_repos: '76',
                 followers: '120000'
             },
-
             {
                 login: 'diego3g',
                 name: 'Diego Fernanedes',
                 public_repos: '76',
                 followers: '120000'
             }
-
         ]
 
     }
+
+    delete(user) {
+        const filteresEntries = this.entries.filter(entry => entry.login !== user.login)
+
+        console.log(filteresEntries)
+    }
 }
 
-
-export class FavoresView extends Favorites {
+export class FavoritesView extends Favorites {
     constructor(root) {
         super(root)
+
+        this.tbody = this.root.querySelector('table tbody')
 
         this.update()
     }
@@ -35,11 +41,28 @@ export class FavoresView extends Favorites {
     update() {
         this.removeAllTr()
 
+        this.entries.forEach(user => {
+            const row = this.createRow()
+            console.log(row)
 
+            row.querySelector('.user img').src = `https://github.com/${user.login}.png`
+            row.querySelector('.user img').alt = `Image de ${user.name}`
+            row.querySelector('.user p').textContent = user.name
+            row.querySelector('.user span').textContent = user.login
+            row.querySelector('.repositories').textContent = user.public_repos
+            row.querySelector('.followers').textContent = user.followers
 
-        entries.forEach(user => {
-            console.log(user)
+            row.querySelector('.remove').onclick = () => {
+                const isOk = confirm('Tem certeza que deseja deletar a linha?')
+                if (isOk) {
+                    this.delete(user)
+                }
+
+            }
+
+            this.tbody.append(row)
         })
+
 
     }
 
@@ -69,12 +92,10 @@ export class FavoresView extends Favorites {
         return tr
     }
 
-
-
     removeAllTr() {
-        const tbody = this.root.querySelector('table tbody')
 
-        tbody.querySelectorAll('tr')
+
+        this.tbody.querySelectorAll('tr')
             .forEach((tr) => {
                 tr.remove()
             })
